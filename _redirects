@@ -1,0 +1,22 @@
+# Force HTTPS
+http://ozmevsim.com/* https://ozmevsim.com/:splat 301!
+http://www.ozmevsim.com/* https://www.ozmevsim.com/:splat 301!
+
+# Canonical domain (www to non-www)
+https://www.ozmevsim.com/* https://ozmevsim.com/:splat 301!
+
+# Legacy redirects
+/hakkimizda /hakkinda 301
+/iletisim /iletisim 301
+/services /hizmetler 301
+/products /urunler 301
+
+# Blog redirects
+/blog/* /blog/:splat 200
+/admin/* /admin/:splat 200
+
+# API routes
+/api/* /api/:splat 200
+
+# Fallback for SPA routes
+/* /index.html 200 

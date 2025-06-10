@@ -1,0 +1,239 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User model for authentication
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  name        String?
+  password    String
+  role        String   @default("USER") // "USER", "EDITOR", "ADMIN"
+  isActive    Boolean  @default(true)
+  lastLogin   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  sessions    Session[]
+  posts       BlogPost[]
+  
+  @@map("users")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  token        String   @unique
+  refreshToken String   @unique
+  expiresAt    DateTime
+  userAgent    String?
+  ipAddress    String?
+  isValid      Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+// Blog models
+model BlogPost {
+  id              String   @id @default(cuid())
+  title           String
+  slug            String   @unique
+  excerpt         String?
+  content         String
+  image           String?
+  status          String   @default("DRAFT") // "DRAFT", "PUBLISHED", "ARCHIVED"
+  authorId        String
+  categoryId      String?
+  tags            String?  // JSON string for tags array
+  viewCount       Int      @default(0)
+  readTime        Int      @default(5) // in minutes
+  publishedAt     DateTime?
+  metaTitle       String?
+  metaDescription String?
+  metaKeywords    String?
+  isActive        Boolean  @default(true)
+  isFeatured      Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  author   User @relation(fields: [authorId], references: [id])
+  category BlogCategory? @relation(fields: [categoryId], references: [id])
+
+  @@map("blog_posts")
+}
+
+model BlogCategory {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  image       String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  posts BlogPost[]
+
+  @@map("blog_categories")
+}
+
+// Product model
+model Product {
+  id              String   @id @default(cuid())
+  title           String
+  slug            String   @unique
+  description     String?
+  content         String?
+  image           String?
+  categoryName    String
+  price           Float?
+  specifications  String?  // JSON string
+  features        String?  // JSON string for features array
+  isActive        Boolean  @default(true)
+  isFeatured      Boolean  @default(false)
+  order           Int      @default(0)
+  metaTitle       String?
+  metaDescription String?
+  metaKeywords    String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("products")
+}
+
+// Service model
+model Service {
+  id              String   @id @default(cuid())
+  title           String
+  slug            String   @unique
+  description     String?
+  content         String?
+  image           String?
+  icon            String?
+  price           Float?
+  features        String?  // JSON string for features array
+  isActive        Boolean  @default(true)
+  isFeatured      Boolean  @default(false)
+  order           Int      @default(0)
+  metaTitle       String?
+  metaDescription String?
+  metaKeywords    String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("services")
+}
+
+// FAQ models
+model FaqCategory {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  faqs Faq[]
+
+  @@map("faq_categories")
+}
+
+model Faq {
+  id         String   @id @default(cuid())
+  question   String
+  answer     String
+  categoryId String
+  order      Int      @default(0)
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  category FaqCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@map("faqs")
+}
+
+// Contact model
+model Contact {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  phone       String?
+  subject     String
+  message     String
+  status      String   @default("NEW") // "NEW", "IN_PROGRESS", "COMPLETED", "SPAM"
+  isRead      Boolean  @default(false)
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("contacts")
+}
+
+// Media model for R2 storage
+model Media {
+  id          String   @id @default(cuid())
+  filename    String
+  originalName String
+  mimeType    String
+  size        Int
+  url         String
+  r2Key       String   @unique
+  bucket      String   @default("ozmevsim-media")
+  isPublic    Boolean  @default(true)
+  uploadedBy  String?
+  alt         String?
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("media")
+}
+
+// Analytics model
+model Analytics {
+  id        String   @id @default(cuid())
+  page      String
+  visits    Int      @default(1)
+  userAgent String?
+  ip        String?
+  country   String?
+  referrer  String?
+  date      DateTime @default(now())
+
+  @@map("analytics")
+}
+
+// Settings model
+model Setting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  description String?
+  type        String   @default("STRING") // "STRING", "NUMBER", "BOOLEAN", "JSON"
+  isPublic    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("settings")
+} 

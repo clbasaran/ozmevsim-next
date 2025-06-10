@@ -1,0 +1,63 @@
+name = "ozmevsim-next"
+main = "src/index.js"
+compatibility_date = "2024-01-15"
+
+# Pages Configuration
+[env.production]
+compatibility_date = "2024-01-15"
+
+# D1 Database Configuration
+[[d1_databases]]
+binding = "DB"
+database_name = "ozmevsim-db"
+database_id = "743fa2a7-b78a-449d-adf3-780535879ad0"
+
+# R2 Storage Configuration
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "ozmevsim-media"
+
+# KV Storage for Cache
+[[kv_namespaces]]
+binding = "CACHE"
+id = "873e0ed27da04d9bb33d2fe9656f4970"
+
+# Environment Variables
+[vars]
+NODE_ENV = "production"
+NEXT_PUBLIC_APP_URL = "https://ozmevsim.com"
+NEXT_PUBLIC_API_URL = "https://ozmevsim.com/api"
+
+# Secrets (set via wrangler secret put)
+# JWT_SECRET
+# JWT_REFRESH_SECRET
+# DATABASE_URL
+# R2_ACCESS_KEY_ID
+# R2_SECRET_ACCESS_KEY
+
+# Build Configuration
+[build]
+command = "npm run build"
+cwd = "."
+watch_dir = "src"
+
+# Pages specific configuration
+[pages]
+compatibility_date = "2024-01-15"
+
+[pages.functions]
+compatibility_date = "2024-01-15"
+
+# Routes for API functions
+[pages.functions.routes]
+include = ["/api/*"]
+
+# Development
+[dev]
+ip = "localhost"
+port = 8787
+local_protocol = "http"
+
+# Triggers
+[[triggers]]
+crons = ["0 0 * * *"]  # Daily cleanup tasks 
