@@ -16,6 +16,14 @@ const nextConfig = {
     optimizeCss: true,
   },
 
+  // TypeScript and ESLint configuration for deployment
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
   // Bundle analyzer
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
     // Bundle analyzer configuration
@@ -45,17 +53,7 @@ const nextConfig = {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://ozmevsim.com/api',
   },
 
-  // TypeScript configuration
-  typescript: {
-    ignoreBuildErrors: true, // Ignore TS errors for static export
-  },
-
-  // ESLint configuration
-  eslint: {
-    ignoreDuringBuilds: true, // Ignore ESLint errors for static export
-  },
-
-  // Generate sitemap and robots.txt
+  // Generate build ID
   async generateBuildId() {
     return 'build-' + Date.now()
   }

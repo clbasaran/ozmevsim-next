@@ -1,16 +1,23 @@
-import { PrismaClient } from '@prisma/client'
+// Conditional Prisma import for static export compatibility
+let PrismaClient: any
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined
+try {
+  // Dynamic import to prevent build issues
+  if (typeof window === 'undefined') {
+    PrismaClient = require('@prisma/client').PrismaClient
+  }
+} catch (error) {
+  console.warn('Prisma client not available in static build')
 }
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient({
-  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-  datasources: {
-    db: {
-      url: process.env.DATABASE_URL
-    }
-  }
-})
+const globalForPrisma = globalThis as unknown as {
+  prisma: any | undefined
+}
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma 
+export const prisma =
+  globalForPrisma.prisma ??
+  (PrismaClient ? new PrismaClient() : null)
+
+if (process.env.NODE_ENV !== 'production' && prisma) {
+  globalForPrisma.prisma = prisma
+} 
