@@ -1,10 +1,9 @@
 name = "ozmevsim-next"
-main = "src/index.js"
 compatibility_date = "2024-01-15"
+compatibility_flags = ["nodejs_compat"]
 
 # Pages Configuration
-[env.production]
-compatibility_date = "2024-01-15"
+pages_build_output_dir = "out"
 
 # D1 Database Configuration
 [[d1_databases]]
@@ -44,9 +43,11 @@ watch_dir = "src"
 # Pages specific configuration
 [pages]
 compatibility_date = "2024-01-15"
+compatibility_flags = ["nodejs_compat"]
 
 [pages.functions]
 compatibility_date = "2024-01-15"
+compatibility_flags = ["nodejs_compat"]
 
 # Routes for API functions
 [pages.functions.routes]
